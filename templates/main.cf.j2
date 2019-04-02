@@ -1,0 +1,74 @@
+# Host name of mail server (FQDN)
+myhostname = {{ postfix_hostname }}
+
+# Domain name of mail
+mydomain = {{ postfix_domain | default(postfix_hostname) }}
+
+# Local mail is as mydomain mail
+myorigin = $mydomain
+inet_interfaces = all
+
+mydestination = $myhostname, {{ inventory_hostname_short }}, localhost.$mydomain, localhost, $mydomain
+
+# Reject unknown sender
+local_recipient_maps = proxy:unix:passwd.byname $alias_maps
+
+# Reliable newtork definitions
+mynetworks = {{ postfix_networks | join(" ") }}
+
+# Use maildir
+home_mailbox = "{{ postfix_home_maildir }}"
+
+mailbox_size_limit = {{ postfix_size_limit.mailbox }}
+message_size_limit = {{ postfix_size_limit.message }}
+
+smtpd_banner = {{ postfix_smtpd_banner }}
+biff = no
+append_dot_mydomain = no
+recipient_delimiter = +
+readme_directory = no
+
+# Authentication methods
+smtpd_sasl_auth_enable = {{ postfix_use_sasl_auth | bool | ternary("yes", "no") }}
+smtpd_sasl_type = {{ postfix_sasl_type }}
+smtpd_sasl_path = {{ postfix_sasl_path }}
+broken_sasl_auth_clients = {{ postfix_broken_sasl_auth_clients }}
+smtpd_sasl_security_options = {{ postfix_sasl_security }}
+smtpd_sasl_local_domain = $myhostname
+{% if postfix_restrictions is defined %}
+{% if postfix_restrictions.sender is defined and postfix_restrictions.sender | length > 0 %}
+smtpd_sender_restrictions = {{ postfix_restrictions.sender | join(", ") }}
+{% endif %}
+{% if postfix_restrictions.client is defined and postfix_restrictions.client | length > 0 %}
+smtpd_client_restrictions = {{ postfix_restrictions.client | join(", ") }}
+{% endif %}
+{% if postfix_restrictions.recipient is defined and postfix_restrictions.recipient | length > 0 %}
+smtpd_recipient_restrictions = {{ postfix_restrictions.recipient | join(", ") }}
+{% endif %}
+{% if postfix_restrictions.helo is defined and postfix_restrictions.helo | length > 0 %}
+smtpd_helo_restrictions = {{ postfix_restrictions.helo | join(", ") }}
+{% endif %}
+{% if postfix_restrictions.relay is defined and postfix_restrictions.relay | length > 0 %}
+smtpd_relay_restrictions = {{ postfix_restrictions.relay | join(", ") }}
+{% endif %}
+{% if postfix_restrictions.data is defined and postfix_restrictions.data | length > 0 %}
+smtpd_data_restrictions = {{ postfix_restrictions.data | join(", ") }}
+{% endif %}
+{% endif %}
+disable_vrfy_command = yes
+smtpd_helo_required = yes
+
+# SSL/TLS configurations
+smtpd_use_tls = yes
+smtpd_tls_auth_only = yes
+smtpd_tls_security_level = encrypt
+smtpd_tls_note_starttls_offer = yes
+smtpd_tls_cert_file = {{ postfix_tls_options.cert }}
+smtpd_tls_key_file = {{ postfix_tls_options.key }}
+{% if postfix_tls_options.ca is defined %}
+smtp_tls_CAfile = {{ postfix_tls_options.ca }}
+{% endif %}
+smtpd_tls_session_cache_database = btree:/etc/postfix/smtpd_scache
+smtpd_tls_received_header = yes
+smtpd_tls_loglevel = {{ postfix_tls_options.loglevel | default(1) }}
+smtpd_tls_session_cache_timeout = {{ postfix_tls_options.session_cache_timeout | default("3600s") }}

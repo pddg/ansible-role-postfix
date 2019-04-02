@@ -1,0 +1,58 @@
+---
+postfix_hostname: "{{ inventory_hostname }}"
+# postfix_domain: "{{ postfix_hostname }}"
+
+postfix_networks:
+  - 127.0.0.0/8
+  - "[::1]/128"
+
+postfix_home_maildir: .Maildir/
+
+postfix_user:
+  name: vmail
+  uid: 5000
+
+postfix_size_limit:
+  # no limit
+  mailbox: 0
+  # 20MB
+  message: 209715200
+
+postfix_smtpd_banner: $myhostname ESMTP
+postfix_use_sasl_auth: yes
+postfix_sasl_type: dovecot
+postfix_sasl_path: private/auth
+postfix_sasl_security: noanonymous
+postfix_broken_sasl_auth_clients: yes
+
+postfix_restrictions:
+  sender:
+    - reject_unknown_sender_domain
+    - reject_non_fqdn_sender
+  client:
+    - permit_mynetworks
+    - reject_unknown_client
+    - permit
+  recipient:
+    - permit_mynetworks
+    - permit_sasl_authenticated
+    - reject_unauth_destination
+    - reject_rbl_client zen.spamhaus.org
+    - reject_rhsbl_reverse_client dbl.spamhaus.org
+    - reject_rhsbl_helo dbl.spamhaus.org
+    - reject_rhsbl_sender dbl.spamhaus.org
+  relay:
+    - permit_mynetworks
+    - permit_sasl_authenticated
+    - reject_unauth_destination
+  helo:
+    - reject_unknown_helo_hostname
+  data:
+    - reject_unauth_pipelining
+
+postfix_tls_options:
+  cert: "/etc/certs/example.crt"
+  key: "/etc/certs/example.key"
+  ca: "/etc/certs/example.pem"
+  loglevel: 1
+  session_cache_timeout: 3600s

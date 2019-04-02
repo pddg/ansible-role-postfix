@@ -1,0 +1,38 @@
+---
+- name: Install dependencies
+  apt:
+    cache_valid_time: 3600
+    name:
+      - postfix
+
+- name: Place configuration files
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: root
+    group: root
+    mode: 0600
+  with_items:
+    - src: 'templates/main.cf.j2'
+      dest: '/etc/postfix/main.cf'
+    - src: 'templates/master.cf.j2'
+      dest: '/etc/postfix/master.cf'
+  notify: restart postfix
+
+- name: Create maildir when user login
+  file:
+    path: '/etc/skel/{{ item }}'
+    state: directory
+    mode: 0700
+    owner: root
+    group: root
+  with_items:
+    - '{{ postfix_home_maildir }}'
+    - '{{ postfix_home_maildir }}new'
+    - '{{ postfix_home_maildir }}cur'
+    - '{{ postfix_home_maildir }}tmp'
+
+- name: Postfix started
+  service:
+    name: postfix
+    state: started
