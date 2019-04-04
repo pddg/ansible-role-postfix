@@ -5,6 +5,13 @@
     name:
       - postfix
 
+- name: Postfix user is created
+  user:
+    name: postfix
+    system: yes
+    create_home: no
+    shell: /sbin/nologin
+
 - name: Place configuration files
   template:
     src: '{{ item.src }}'
@@ -21,16 +28,16 @@
 
 - name: Create maildir when user login
   file:
-    path: '/etc/skel/{{ item }}'
+    path: '/etc/skel/{{ postfix_home_maildir }}{{ item }}'
     state: directory
     mode: 0700
     owner: root
     group: root
   with_items:
-    - '{{ postfix_home_maildir }}'
-    - '{{ postfix_home_maildir }}new'
-    - '{{ postfix_home_maildir }}cur'
-    - '{{ postfix_home_maildir }}tmp'
+    - ''
+    - 'new'
+    - 'cur'
+    - 'tmp'
 
 - name: Postfix started
   service:
