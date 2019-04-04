@@ -1,5 +1,6 @@
 galaxy_info:
   author: pddg
+  role_name: postfix
   description: Role for postfix
   company: StudioAquatan
   license: MIT
