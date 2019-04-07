@@ -8,6 +8,10 @@ mydomain = {{ postfix_domain | default(postfix_hostname) }}
 myorigin = $mydomain
 inet_interfaces = all
 
+{% if postfix_relayhost is defined %}
+relayhost = {{ postfix_relayhost }}
+{% endif %}
+
 mydestination = $myhostname, {{ inventory_hostname_short }}, localhost.$mydomain, localhost, $mydomain
 
 # Reject unknown sender

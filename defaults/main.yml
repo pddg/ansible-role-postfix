@@ -8,9 +8,8 @@ postfix_networks:
 
 postfix_home_maildir: .Maildir/
 
-postfix_user:
-  name: vmail
-  uid: 5000
+# Define relay host
+# relayhost: smtp.example.com
 
 postfix_size_limit:
   # no limit
