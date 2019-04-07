@@ -1,0 +1,4 @@
+# {{ ansible_managed }}
+{% for alias in postfix_aliases %}
+{{ alias.from }}: {{ alias.to | join(" ") }}
+{% endfor %}

@@ -1,4 +1,7 @@
 ---
+- name: Renew aliase db
+  shell: newaliases
+
 - name: restart postfix
   service:
     name: postfix

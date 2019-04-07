@@ -39,6 +39,12 @@
     - 'cur'
     - 'tmp'
 
+- name: Aliases are up-tp-date
+  templates:
+    src: "templates/aliases.j2"
+    dest: "/etc/aliases"
+  notify: Renew aliase db
+
 - name: Postfix started
   service:
     name: postfix

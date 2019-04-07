@@ -11,6 +11,11 @@ postfix_home_maildir: .Maildir/
 # Define relay host
 # relayhost: smtp.example.com
 
+# Mail alias
+postfix_aliases:
+  - from: postmaster
+    to: ['root']
+
 postfix_size_limit:
   # no limit
   mailbox: 0
