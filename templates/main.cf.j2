@@ -16,8 +16,11 @@ local_recipient_maps = proxy:unix:passwd.byname $alias_maps
 # Reliable newtork definitions
 mynetworks = {{ postfix_networks | join(" ") }}
 
+# Protocol to use.
+inet_protocols = {{ postfix_enable_ipv6 | bool | ternary("all", "ipv4") }}
+
 # Use maildir
-home_mailbox = "{{ postfix_home_maildir }}"
+home_mailbox = {{ postfix_home_maildir }}
 
 mailbox_size_limit = {{ postfix_size_limit.mailbox }}
 message_size_limit = {{ postfix_size_limit.message }}
@@ -32,7 +35,7 @@ readme_directory = no
 smtpd_sasl_auth_enable = {{ postfix_use_sasl_auth | bool | ternary("yes", "no") }}
 smtpd_sasl_type = {{ postfix_sasl_type }}
 smtpd_sasl_path = {{ postfix_sasl_path }}
-broken_sasl_auth_clients = {{ postfix_broken_sasl_auth_clients }}
+broken_sasl_auth_clients = {{ postfix_broken_sasl_auth_clients | bool | ternary("yes", "no")}}
 smtpd_sasl_security_options = {{ postfix_sasl_security }}
 smtpd_sasl_local_domain = $myhostname
 {% if postfix_restrictions is defined %}
@@ -59,6 +62,7 @@ disable_vrfy_command = yes
 smtpd_helo_required = yes
 
 # SSL/TLS configurations
+smtp_tls_security_level = may
 smtpd_use_tls = yes
 smtpd_tls_auth_only = yes
 smtpd_tls_security_level = encrypt
@@ -67,7 +71,8 @@ smtpd_tls_key_file = {{ postfix_tls_options.key }}
 {% if postfix_tls_options.ca is defined %}
 smtp_tls_CAfile = {{ postfix_tls_options.ca }}
 {% endif %}
-smtpd_tls_session_cache_database = btree:/etc/postfix/smtpd_scache
+smtpd_tls_session_cache_database = btree:${queue_directory}/smtpd_scache
+smtp_tls_session_cache_database = btree:${queue_directory}/smtp_scache
 smtpd_tls_received_header = yes
 smtpd_tls_loglevel = {{ postfix_tls_options.loglevel | default(1) }}
 smtpd_tls_session_cache_timeout = {{ postfix_tls_options.session_cache_timeout | default("3600s") }}
