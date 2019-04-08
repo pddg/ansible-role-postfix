@@ -16,6 +16,8 @@ postfix_aliases:
   - from: postmaster
     to: ['root']
 
+postfix_enable_ipv6: no
+
 postfix_size_limit:
   # no limit
   mailbox: 0
