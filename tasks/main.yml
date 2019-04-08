@@ -39,8 +39,8 @@
     - 'cur'
     - 'tmp'
 
-- name: Aliases are up-tp-date
-  templates:
+- name: Aliases are up-to-date
+  template:
     src: "templates/aliases.j2"
     dest: "/etc/aliases"
   notify: Renew aliase db
