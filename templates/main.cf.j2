@@ -14,6 +14,9 @@ relayhost = {{ postfix_relayhost }}
 
 mydestination = $myhostname, {{ inventory_hostname_short }}, localhost.$mydomain, localhost, $mydomain
 
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+
 # Reject unknown sender
 local_recipient_maps = proxy:unix:passwd.byname $alias_maps
 
