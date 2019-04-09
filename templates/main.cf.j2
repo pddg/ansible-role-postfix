@@ -68,15 +68,14 @@ smtpd_helo_required = yes
 # SSL/TLS configurations
 smtp_tls_security_level = may
 smtpd_use_tls = yes
-smtpd_tls_auth_only = yes
-smtpd_tls_security_level = encrypt
+smtpd_tls_security_level = may
 smtpd_tls_cert_file = {{ postfix_tls_options.cert }}
 smtpd_tls_key_file = {{ postfix_tls_options.key }}
 {% if postfix_tls_options.ca is defined %}
 smtp_tls_CAfile = {{ postfix_tls_options.ca }}
 {% endif %}
-smtpd_tls_session_cache_database = btree:${queue_directory}/smtpd_scache
-smtp_tls_session_cache_database = btree:${queue_directory}/smtp_scache
+smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 smtpd_tls_received_header = yes
 smtpd_tls_loglevel = {{ postfix_tls_options.loglevel | default(1) }}
 smtpd_tls_session_cache_timeout = {{ postfix_tls_options.session_cache_timeout | default("3600s") }}
