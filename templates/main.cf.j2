@@ -28,6 +28,9 @@ inet_protocols = {{ postfix_enable_ipv6 | bool | ternary("all", "ipv4") }}
 
 # Use maildir
 home_mailbox = {{ postfix_home_maildir }}
+{% if postfix_mailbox_transport is defined %}
+mailbox_transport = {{ postfix_mailbox_transport }}
+{% endif %}
 
 mailbox_size_limit = {{ postfix_size_limit.mailbox }}
 message_size_limit = {{ postfix_size_limit.message }}

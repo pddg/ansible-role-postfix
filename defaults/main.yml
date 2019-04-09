@@ -7,6 +7,8 @@ postfix_networks:
   - "[::1]/128"
 
 postfix_home_maildir: .Maildir/
+# If use lmtp on dovecot, please set up it by pddg.dovecot role.
+# postfix_mailbox_transport: /var/spool/postfix/private/dovecot-lmtp
 
 # Define relay host
 # relayhost: smtp.example.com
